@@ -7,7 +7,7 @@ import os
 from dotenv import load_dotenv
 from twilio.rest import Client
 
-load_dotenv(dotenv_path=".env")
+load_dotenv(dotenv_path="/home/pi/Desktop/appliance-notifications/.env")
 
 GPIO.setmode(GPIO.BCM)
 
