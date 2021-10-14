@@ -215,13 +215,13 @@ def send_appliance_active_message():
     cycle_start = time.time()
     
     if current_user == u1lightPin:
-        send_sms(os.environ['USER1_START_MESSAGE'], os.environ['USER1_NUMBER'])
+        send_sms(os.getenv('USER1_START_MESSAGE'), os.getenv('USER1_NUMBER'))
     elif current_user == u2lightPin:
-        send_sms(os.environ['USER2_START_MESSAGE'], os.environ['USER2_NUMBER'])
+        send_sms(os.getenv('USER2_START_MESSAGE'), os.getenv('USER2_NUMBER'))
     elif current_user == u3lightPin:
-        send_sms(os.environ['USER3_START_MESSAGE'], os.environ['USER3_NUMBER'])
+        send_sms(os.getenv('USER3_START_MESSAGE'), os.getenv('USER3_NUMBER'))
     elif current_user == u4lightPin:
-        send_sms(os.environ['USER4_START_MESSAGE'], os.environ['USER4_NUMBER'])
+        send_sms(os.getenv('USER4_START_MESSAGE'), os.getenv('USER4_NUMBER'))
 
     appliance_active = True
     GPIO.output(vlightPin, True)
@@ -231,13 +231,13 @@ def send_appliance_inactive_message():
     global current_user
     
     if current_user == u1lightPin:
-        send_sms(os.environ['USER1_END_MESSAGE'], os.environ['USER1_NUMBER'])
+        send_sms(os.getenv('USER1_END_MESSAGE'), os.getenv('USER1_NUMBER'))
     elif current_user == u2lightPin:
-        send_sms(os.environ['USER2_END_MESSAGE'], os.environ['USER2_NUMBER'])
+        send_sms(os.getenv('USER2_END_MESSAGE'), os.getenv('USER2_NUMBER'))
     elif current_user == u3lightPin:
-        send_sms(os.environ['USER3_END_MESSAGE'], os.environ['USER3_NUMBER'])
+        send_sms(os.getenv('USER3_END_MESSAGE'), os.getenv('USER3_NUMBER'))
     elif current_user == u4lightPin:
-        send_sms(os.environ['USER4_END_MESSAGE'], os.environ['USER4_NUMBER'])
+        send_sms(os.getenv('USER4_END_MESSAGE'), os.getenv('USER4_NUMBER'))
     
     appliance_active = False
     GPIO.output(vlightPin, False)
@@ -302,7 +302,7 @@ def send_sms(body, number):
     message = client.messages \
                     .create(
                         body=body,
-                        from_=os.environ['TWILIO_PHONE_NUMBER'],
+                        from_=os.getenv('TWILIO_PHONE_NUMBER'),
                         to=number
                     )
     logging.debug(message.sid)    
