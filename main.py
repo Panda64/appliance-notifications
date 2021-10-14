@@ -4,7 +4,10 @@ import time
 import threading
 import logging
 import os
+from dotenv import load_dotenv
 from twilio.rest import Client
+
+load_dotenv(dotenv_path=".env")
 
 GPIO.setmode(GPIO.BCM)
 
@@ -52,7 +55,7 @@ vibrating = False
 appliance_active = False
 last_vibration_time = time.time()
 start_vibration_time = last_vibration_time
-cycle_start = None
+cycle_start = float('inf')
 
 # Twilio account information for sending SMS alerts
 twilio_account_sid = os.getenv('TWILIO_ACCOUNT_SID')
@@ -307,7 +310,7 @@ def send_sms(body, number):
                     )
     logging.debug(message.sid)    
 
-GPIO.add_event_detect(vsensorPin, GPIO.RISING, callback=vibrated)
+GPIO.add_event_detect(vsensorPin, GPIO.RISING, callback=vibrated, bouncetime=2100)
 GPIO.add_event_detect(button1Pin, GPIO.FALLING, callback=lambda x: user_selected(u1lightPin))
 GPIO.add_event_detect(button2Pin, GPIO.FALLING, callback=lambda x: user_selected(u2lightPin))
 GPIO.add_event_detect(button3Pin, GPIO.FALLING, callback=lambda x: user_selected(u3lightPin))
