@@ -3,7 +3,6 @@ import RPi.GPIO as GPIO
 import time
 import threading
 import logging
-import sys
 import os
 from twilio.rest import Client
 
@@ -32,11 +31,21 @@ GPIO.setup(button3Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(button4Pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 GPIO.setup(vsensorPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
+# Ensuring all LED lights are off at initial execution
 GPIO.output(u1lightPin, False)
 GPIO.output(u2lightPin, False)
 GPIO.output(u3lightPin, False)
 GPIO.output(u4lightPin, False)
 GPIO.output(vlightPin, False)
+
+# Seconds a continuous vibration is detected before the appliance is considered running
+begin_seconds = 10
+# Seconds no vibration is detected before appliance is considered off
+end_seconds = 20
+# Seconds until user is cleared from being active if the appliance has not started yet
+user_expiration = 20
+# Debug Messages
+verbose = True
 
 current_user = None
 vibrating = False
@@ -44,14 +53,13 @@ appliance_active = False
 last_vibration_time = time.time()
 start_vibration_time = last_vibration_time
 cycle_start = None
-begin_seconds = 10
-end_seconds = 20
-verbose = True
-twilio_account_sid = ''
-twilio_auth_token = ''
+
+# Twilio account information for sending SMS alerts
+twilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']
+twilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']
 client = Client(twilio_account_sid, twilio_auth_token)
 
-
+# The following 6 functions are for blinking my roomate's names in morse code (not critical to core functionality)
 def short_beep(pin):
     GPIO.output(pin, True)
     time.sleep(0.25)
@@ -206,14 +214,15 @@ def send_appliance_active_message():
     
     cycle_start = time.time()
     
-    message = client.messages \
-                    .create(
-                        body="",
-                        from_='',
-                        to=''
-                    )
-    logging.debug(message.sid)
-    
+    if current_user == u1lightPin:
+        send_sms(os.environ['USER1_START_MESSAGE'], os.environ['USER1_NUMBER'])
+    elif current_user == u2lightPin:
+        send_sms(os.environ['USER2_START_MESSAGE'], os.environ['USER2_NUMBER'])
+    elif current_user == u3lightPin:
+        send_sms(os.environ['USER3_START_MESSAGE'], os.environ['USER3_NUMBER'])
+    elif current_user == u4lightPin:
+        send_sms(os.environ['USER4_START_MESSAGE'], os.environ['USER4_NUMBER'])
+
     appliance_active = True
     GPIO.output(vlightPin, True)
 
@@ -221,13 +230,14 @@ def send_appliance_inactive_message():
     global appliance_active
     global current_user
     
-    message = client.messages \
-                    .create(
-                        body="",
-                        from_='',
-                        to=''
-                    )
-    logging.debug(message.sid)
+    if current_user == u1lightPin:
+        send_sms(os.environ['USER1_END_MESSAGE'], os.environ['USER1_NUMBER'])
+    elif current_user == u2lightPin:
+        send_sms(os.environ['USER2_END_MESSAGE'], os.environ['USER2_NUMBER'])
+    elif current_user == u3lightPin:
+        send_sms(os.environ['USER3_END_MESSAGE'], os.environ['USER3_NUMBER'])
+    elif current_user == u4lightPin:
+        send_sms(os.environ['USER4_END_MESSAGE'], os.environ['USER4_NUMBER'])
     
     appliance_active = False
     GPIO.output(vlightPin, False)
@@ -271,8 +281,6 @@ def user_selected(user_light_pin):
             greet_user3()
         elif user_light_pin == u4lightPin:
             greet_user4()
-        else:
-            return 'Invalid User Number!'
         
         if current_user == user_light_pin:
             time.sleep(1)
@@ -282,25 +290,33 @@ def user_selected(user_light_pin):
 def expire(user):
     global current_user
     
-    time.sleep(20)
+    time.sleep(user_expiration)
     
     if not appliance_active:
         GPIO.output(user, False)
         
         if current_user == user:
             current_user = None
-    
 
-logging.basicConfig(format='%(message)s', level=logging.INFO)
+def send_sms(body, number):
+    message = client.messages \
+                    .create(
+                        body=body,
+                        from_=os.environ['TWILIO_PHONE_NUMBER'],
+                        to=number
+                    )
+    logging.debug(message.sid)    
 
-if verbose:
-    logging.getLogger().setLevel(logging.DEBUG)
-
-GPIO.add_event_detect(vsensorPin, GPIO.RISING, callback=vibrated, bouncetime=2100)
+GPIO.add_event_detect(vsensorPin, GPIO.RISING, callback=vibrated)
 GPIO.add_event_detect(button1Pin, GPIO.FALLING, callback=lambda x: user_selected(u1lightPin))
 GPIO.add_event_detect(button2Pin, GPIO.FALLING, callback=lambda x: user_selected(u2lightPin))
 GPIO.add_event_detect(button3Pin, GPIO.FALLING, callback=lambda x: user_selected(u3lightPin))
 GPIO.add_event_detect(button4Pin, GPIO.FALLING, callback=lambda x: user_selected(u4lightPin))
 
+threading.Timer(2, check).start() 
 
-threading.Timer(2, check).start()            
+
+logging.basicConfig(format='%(message)s', level=logging.INFO)
+
+if verbose:
+    logging.getLogger().setLevel(logging.DEBUG)
