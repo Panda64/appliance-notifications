@@ -55,8 +55,8 @@ start_vibration_time = last_vibration_time
 cycle_start = None
 
 # Twilio account information for sending SMS alerts
-twilio_account_sid = os.environ['TWILIO_ACCOUNT_SID']
-twilio_auth_token = os.environ['TWILIO_AUTH_TOKEN']
+twilio_account_sid = os.getenv('TWILIO_ACCOUNT_SID')
+twilio_auth_token = os.getenv('TWILIO_AUTH_TOKEN')
 client = Client(twilio_account_sid, twilio_auth_token)
 
 # The following 6 functions are for blinking my roomate's names in morse code (not critical to core functionality)
