@@ -44,9 +44,9 @@ GPIO.output(vlightPin, False)
 # Seconds a continuous vibration is detected before the appliance is considered running
 begin_seconds = 10
 # Seconds no vibration is detected before appliance is considered off
-end_seconds = 20
+end_seconds = 60
 # Seconds until user is cleared from being active if the appliance has not started yet
-user_expiration = 20
+user_expiration = 180
 # Debug Messages
 verbose = True
 
@@ -232,6 +232,9 @@ def send_appliance_active_message():
 def send_appliance_inactive_message():
     global appliance_active
     global current_user
+    global cycle_start
+
+    cycle_start = float('inf')
     
     if current_user == u1lightPin:
         send_sms(os.getenv('USER1_END_MESSAGE'), os.getenv('USER1_NUMBER'))
