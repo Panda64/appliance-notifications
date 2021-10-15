@@ -44,7 +44,7 @@ GPIO.output(vlightPin, False)
 # Seconds a continuous vibration is detected before the appliance is considered running
 begin_seconds = 10
 # Seconds no vibration is detected before appliance is considered off
-end_seconds = 90
+end_seconds = 180
 # Seconds until user is cleared from being active if the appliance has not started yet
 user_expiration = 180
 # Debug Messages
