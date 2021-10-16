@@ -105,7 +105,7 @@ USER4_NUMBER=+19998887777
 TWILIO_PHONE_NUMBER=+19998887777
 ```
 
-This is a good time to point out that because the SMS messages are being sent through [Twilio's](https://www.twilio.com) API, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_PHONE_NUMBER` are required fields for the program to run. You can sign up for a Twilio account to obtain this information. If you do not wish to use this service, simply delete the Twilio variables in `main.py` (lines 60-63) and replace the `send_sms()` function with a notification method of your choosing.
+This is a good time to point out that because the SMS messages are being sent through [Twilio's](https://www.twilio.com) API, `TWILIO_ACCOUNT_SID`, `TWILIO_AUTH_TOKEN`, and `TWILIO_PHONE_NUMBER` are required fields for the program to run. You can sign up for a Twilio account to obtain this information. If you do not wish to use this service, simply delete the Twilio variables in `main.py` (lines 62-65) and replace the `send_sms()` function with a notification method of your choosing.
 
 After your `.env` file is all setup, make sure your `dotenv_path` in `main.py` (line 10) is properly pointing to it to avoid errors:
 
