@@ -1,3 +1,5 @@
 # Applicance Notifications
 
-Full Docs Coming Soon.
+Inspired by [Shmoopty's Appliance Monitor](https://github.com/Shmoopty/rpi-appliance-monitor)
+
+Read the full documentation [here](https://jayjay.me/appliance-notifications)

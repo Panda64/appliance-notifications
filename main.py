@@ -45,6 +45,8 @@ GPIO.output(vlightPin, False)
 begin_seconds = 10
 # Seconds no vibration is detected before appliance is considered off
 end_seconds = 180
+# Max amount of seconds an appliance should be running for
+max_time = 5400
 # Seconds until user is cleared from being active if the appliance has not started yet
 user_expiration = 180
 # Debug Messages
@@ -264,7 +266,7 @@ def check():
     if vibrating and delta_vibration > begin_seconds and current_user and not appliance_active:
         send_appliance_active_message()
         
-    if (not vibrating and appliance_active and current_time - last_vibration_time > end_seconds) or (current_time - cycle_start > 7200):
+    if (not vibrating and appliance_active and current_time - last_vibration_time > end_seconds) or (current_time - cycle_start > max_time):
         send_appliance_inactive_message()
     
     vibrating = current_time - last_vibration_time < 3
